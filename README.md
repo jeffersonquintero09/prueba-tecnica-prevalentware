@@ -76,4 +76,9 @@ Para poner en marcha la aplicación, sigue estos pasos:
    + Integrar con Amazon RDS para la gestión de la base de datos PostgreSQL.
    + Utilizar AWS CloudFormation o Terraform para infraestructura como código y facilitar la replicación y el despliegue.
    
+<<<<<<< HEAD
 Para ambos casos, es crucial configurar un sistema de monitoreo y alertas con AWS CloudWatch y realizar pruebas de carga para asegurar que la aplicación puede manejar picos de tráfico inesperados. También, implementar una estrategia de CI/CD para automatizar el proceso de despliegue y pruebas.
+=======
+Para ambos casos, es crucial configurar un sistema de monitoreo y alertas con AWS CloudWatch y realizar pruebas de carga para asegurar que la aplicación puede manejar picos de tráfico inesperados. También, implementar una estrategia de CI/CD para automatizar el proceso de despliegue y pruebas.
+
+>>>>>>> a2c05682a77cfd1832adcfa8b2e5e0542a23ce58
