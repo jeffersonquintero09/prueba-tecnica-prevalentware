@@ -29,6 +29,7 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 // Configuración del servidor Apollo con el esquema y contextos adicionales.
 const server = new ApolloServer({
   schema,
+  introspection: true,
   // Aquí se pueden añadir configuraciones adicionales como plugins, cors, etc.
 });
 
