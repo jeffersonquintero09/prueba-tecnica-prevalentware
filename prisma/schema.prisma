@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                         String           @id
+  email                      String           @unique
+  emailVerified              DateTime?
+  termsAndConditionsAccepted DateTime?
+  name                       String?
+  image                      String?
+  position                   String?
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime
+  roleId                     String?
+  sessions                   Session[]
+  role                       Role?            @relation(fields: [roleId], references: [id])
+  userMonitoring             UserMonitoring[]
+  countries                  Country[]        @relation("CountryToUser")
+}
+
+model UserMonitoring {
+  id          String   @id
+  usage       Int
+  description String
+  userId      String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Country {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  users     User[]   @relation("CountryToUser")
+}
+
+model Role {
+  id        String        @id
+  name      Enum_RoleName
+  createdAt DateTime      @default(now())
+  users     User[]
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+enum Enum_RoleName {
+  Admin
+  Manager
+  User
+}

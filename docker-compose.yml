@@ -1,0 +1,45 @@
+# Notas adicionales de documentación:
+
+# - La versión '3.8' del archivo `docker-compose.yml` permite utilizar todas las características disponibles hasta la versión 3.8 de Docker Compose, lo que es adecuado para la mayoría de las aplicaciones modernas.
+# - El uso de `env_file` para cargar variables de entorno desde un archivo `.env` es una práctica común para mantener las credenciales y otros datos sensibles fuera del control de versiones y facilitar la configuración de diferentes entornos.
+# - Los servicios `pgadmin` y `app` utilizan `depends_on` para definir la dependencia en el servicio `postgres`, lo que asegura que se respete el orden de inicio.
+# - Los volúmenes se utilizan en el servicio `postgres` para asegurar que los datos persistan entre los reinicios del contenedor, lo cual es crucial para no perder datos durante el desarrollo.
+# - Es importante que los puertos expuestos en `ports` no entren en conflicto con otros servicios que puedan estar ejecutándose en el host.
+
+version: '3.8'
+
+services:
+  # Servicio para la base de datos PostgreSQL.
+  postgres:
+    image: postgres:15 # Utiliza la versión 15 de la imagen oficial de PostgreSQL.
+    environment:
+      - POSTGRES_DB=${DB_NAME} # Nombre de la base de datos, tomado de las variables de entorno.
+      - POSTGRES_USER=${DB_USER} # Usuario de la base de datos, tomado de las variables de entorno.
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # Contraseña de la base de datos, tomado de las variables de entorno.
+    ports:
+      - "5432:5432" # Expone el puerto 5432 de PostgreSQL al puerto 5432 del host.
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data # Persiste los datos de PostgreSQL en un volumen en el host.
+    env_file:
+      - .env # Carga las variables de entorno desde el archivo .env.
+
+  # Servicio para pgAdmin, una herramienta de administración para PostgreSQL.
+  pgadmin:
+    image: dpage/pgadmin4 # Utiliza la imagen oficial de pgAdmin 4.
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL} # Email predeterminado para iniciar sesión en pgAdmin.
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD} # Contraseña predeterminada para iniciar sesión en pgAdmin.
+    ports:
+      - "5050:80" # Expone el puerto 80 de pgAdmin al puerto 5050 del host.
+    depends_on:
+      - postgres # Indica que pgAdmin depende del servicio postgres y debe esperar a que esté disponible.
+
+  # Servicio para la aplicación Node.js.
+  app:
+    build: . # Construye la imagen de la aplicación usando el Dockerfile en el directorio actual.
+    ports:
+      - "4000:4000" # Expone el puerto 4000 de la aplicación al puerto 4000 del host.
+    depends_on:
+      - postgres # Indica que la aplicación depende del servicio postgres y debe esperar a que esté disponible.
+    env_file:
+      - .env # Carga las variables de entorno desde el archivo .env para la aplicación.
